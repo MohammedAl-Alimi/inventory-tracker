@@ -16,34 +16,50 @@ export default function Home() {
   const [image, setImage] = useState(null);
 
   const updateInventory = async () => {
-    const snapshot = query(collection(firestore, 'inventory'))
-    const docs = await getDocs(snapshot)
-    const inventoryList = []
+    const snapshot = query(collection(firestore, 'inventory'));
+    const docs = await getDocs(snapshot);
+    const inventoryList = [];
     docs.forEach((doc) => {
       inventoryList.push({
         name: doc.id,
         ...doc.data(),
-      })
-    })
-    setInventory(inventoryList)
-  }
+      });
+    });
+    setInventory(inventoryList);
+  };
 
-  const addItem = async (item, quantity, imageUrl) => {
-    const docRef = doc(collection(firestore, 'inventory'), item)
-    const docSnap = await getDoc(docRef)
+  const addItem = async (item, quantity) => {
+    const docRef = doc(collection(firestore, 'inventory'), item);
+    const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      const { quantity: existingQuantity } = docSnap.data()
-      await setDoc(docRef, { quantity: existingQuantity + quantity, imageUrl }, { merge: true })
+      const { quantity: existingQuantity } = docSnap.data();
+      await setDoc(docRef, { quantity: existingQuantity + quantity }, { merge: true });
     } else {
-      await setDoc(docRef, { quantity, imageUrl })
+      await setDoc(docRef, { quantity });
     }
 
-    await updateInventory()
-  }
+    await updateInventory();
+  };
 
-  const handleOpen = () => setOpen(true)
-  const handleClose = () => setOpen(false)
+  const removeItem = async (item) => {
+    const docRef = doc(collection(firestore, 'inventory'), item);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const { quantity } = docSnap.data();
+      if (quantity === 1) {
+        await deleteDoc(docRef);
+      } else {
+        await setDoc(docRef, { quantity: quantity - 1 }, { merge: true });
+      }
+    }
+
+    await updateInventory();
+  };
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   const handleImageChange = (e) => {
     if (e.target.files[0]) {
@@ -57,8 +73,8 @@ export default function Home() {
       const storageRef = ref(storage, `images/${image.name}`);
       await uploadBytes(storageRef, image);
       const url = await getDownloadURL(storageRef);
-      await addItem(itemName, parseInt(itemQuantity), url);
       setImage(null);
+      await addItem(itemName, parseInt(itemQuantity));
       setItemName("");
       setItemQuantity("");
       handleClose();
@@ -68,12 +84,12 @@ export default function Home() {
   };
 
   useEffect(() => {
-    updateInventory()
-  }, [])
+    updateInventory();
+  }, []);
 
   const filteredInventory = inventory.filter(item =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  );
 
   return (
     <Box sx={{ bgcolor: '#808080', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
