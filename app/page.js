@@ -2,9 +2,9 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { firestore } from "@/firebase";
-import { AppBar, Toolbar, Typography, Container, Box, Modal, Stack, TextField, Button, Collapse, IconButton, InputAdornment } from "@mui/material"; // Ensure Collapse and IconButton are imported
+import { AppBar, Toolbar, Typography, Container, Box, Modal, Grid, TextField, Button, Collapse, IconButton, InputAdornment } from "@mui/material";
 import { collection, getDocs, doc, query, setDoc, deleteDoc, getDoc } from "firebase/firestore";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'; // Import icon for button
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 export default function Home() {
   const [inventory, setInventory] = useState([]);
@@ -57,18 +57,18 @@ export default function Home() {
   }
 
   useEffect(() => {
-    updateInventory() // Correctly fetch the inventory items on component mount
+    updateInventory()
   }, [])
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
 
-  const filteredInventory = inventory.filter(item => // Added filtered inventory based on search query
+  const filteredInventory = inventory.filter(item =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   return (
-    <Box sx={{ bgcolor: '#808080', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}> {/* Set the background color to gray */}
+    <Box sx={{ bgcolor: '#808080', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
@@ -78,29 +78,34 @@ export default function Home() {
       </AppBar>
       
       <Container maxWidth="md" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', mt: 4 }}>
-        <Stack direction="row" spacing={2} alignItems="center" mb={4}> {/* Stack to arrange search input and button */}
-          <TextField
-            variant="outlined"
-            value={searchQuery} // Added search input field
-            onChange={(e) => setSearchQuery(e.target.value)} // Set search query on change
-            placeholder="Search items..."
-            size="small" // Set the size of the search input to small
-            InputProps={{
-              style: {
-                backgroundColor: '#1976d2', // Set background color to match "Add New Item" button
-                color: '#fff', // Set font color to white
-              },
-            }}
-          />
-          <Button variant="contained" onClick={handleOpen} style={{ backgroundColor: '#1976d2', color: '#fff' }}> {/* Same styling as "Add New Item" */}
-            Add New Item
-          </Button>
-        </Stack>
+        <Grid container spacing={2} alignItems="center" mb={4}>
+          <Grid item xs={12} sm={8}>
+            <TextField
+              variant="outlined"
+              fullWidth
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search items..."
+              size="small"
+              InputProps={{
+                style: {
+                  backgroundColor: '#1976d2',
+                  color: '#fff',
+                },
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Button variant="contained" fullWidth onClick={handleOpen} style={{ backgroundColor: '#1976d2', color: '#fff' }}>
+              Add New Item
+            </Button>
+          </Grid>
+        </Grid>
 
         <Box width="100%" border="1px solid #333" borderRadius="8px" p={2} boxShadow={3} bgcolor="white">
           <Box
             width="100%"
-            height="100px"
+            height={{ xs: 'auto', md: '100px' }}
             bgcolor="#ADD8E6"
             display="flex"
             alignItems="center"
@@ -109,59 +114,55 @@ export default function Home() {
             borderRadius="8px"
             boxShadow={2}
           >
-            <Typography variant="h2" color="#333">
+            <Typography variant="h4" color="#333" sx={{ fontSize: { xs: '1.5rem', md: '2rem' } }}>
               Inventory Items
             </Typography>
-            <IconButton onClick={() => setListOpen(!listOpen)}> {/* Button to toggle inventory list visibility */}
+            <IconButton onClick={() => setListOpen(!listOpen)}>
               <ExpandMoreIcon />
             </IconButton>
           </Box>
           
-          <Collapse in={listOpen} timeout="auto" unmountOnExit> {/* Use Collapse to show/hide the inventory list */}
-            <Box mt={2} borderRadius="8px"> {/* Encapsulate search results within a bordered box */}
-              <Stack
-                width="100%"
-                height={filteredInventory.length > 4 ? "400px" : "auto"} // Set height for scrollable list if more than 4 items
-                spacing={2} // Ensure proper spacing between items
-                overflow={filteredInventory.length > 4 ? "auto" : "visible"} // Enable scrolling if more than 4 items
-              >
+          <Collapse in={listOpen} timeout="auto" unmountOnExit>
+            <Box mt={2} borderRadius="8px">
+              <Grid container spacing={2} sx={{ height: filteredInventory.length > 4 ? '400px' : 'auto', overflow: filteredInventory.length > 4 ? 'auto' : 'visible' }}>
                 {filteredInventory.map(({ name, quantity }) => {
-                  const isHighlighted = searchQuery && name.toLowerCase().includes(searchQuery.toLowerCase()); // Check if item matches search query
+                  const isHighlighted = searchQuery && name.toLowerCase().includes(searchQuery.toLowerCase());
                   return (
-                    <Box
-                      key={name}
-                      width="100%"
-                      minHeight="150px"
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="space-between"
-                      bgcolor={isHighlighted ? "#FFFFE0" : "#FFFFFF"} // Highlight if matches search query
-                      border={isHighlighted ? "2px solid #FFD700" : "1px solid #ddd"} // Highlight border
-                      zIndex={isHighlighted ? 1 : 0} // Bring to front if highlighted
-                      padding={2} // Adjust padding to ensure border covers the item properly
-                      borderRadius="8px"
-                      boxShadow={isHighlighted ? 4 : 1} // Add shadow to highlighted items
-                    >
-                      <Typography variant="h3" color="#333" textAlign="center">
-                        {name.charAt(0).toUpperCase() + name.slice(1)}
-                      </Typography>
-                      <Typography variant="h3" color="#333" textAlign="center">
-                        {quantity}
-                      </Typography>
-                      <Stack direction="row" spacing={2}>
-                        <Button variant="contained" onClick={() => addItem(name, 1)}>Add</Button> {/* Add 1 to the existing quantity */}
-                        <Button variant="contained" onClick={() => removeItem(name)}>Remove</Button>
-                      </Stack>
-                    </Box>
-                  )
+                    <Grid item xs={12} key={name}>
+                      <Box
+                        width="100%"
+                        minHeight="150px"
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="space-between"
+                        bgcolor={isHighlighted ? "#FFFFE0" : "#FFFFFF"}
+                        border={isHighlighted ? "2px solid #FFD700" : "1px solid #ddd"}
+                        zIndex={isHighlighted ? 1 : 0}
+                        padding={2}
+                        borderRadius="8px"
+                        boxShadow={isHighlighted ? 4 : 1}
+                      >
+                        <Typography variant="h6" color="#333" textAlign="center">
+                          {name.charAt(0).toUpperCase() + name.slice(1)}
+                        </Typography>
+                        <Typography variant="h6" color="#333" textAlign="center">
+                          {quantity}
+                        </Typography>
+                        <Stack direction="row" spacing={2}>
+                          <Button variant="contained" onClick={() => addItem(name, 1)}>Add</Button>
+                          <Button variant="contained" onClick={() => removeItem(name)}>Remove</Button>
+                        </Stack>
+                      </Box>
+                    </Grid>
+                  );
                 })}
-              </Stack>
+              </Grid>
             </Box>
           </Collapse>
         </Box>
 
         <Modal open={open} onClose={handleClose}>
-          <Box position="absolute" top="50%" left="50%" sx={{ transform: "translate(-50%, -50%)" }} width={400} bgcolor="white" border="2px solid #000"
+          <Box position="absolute" top="50%" left="50%" sx={{ transform: "translate(-50%, -50%)" }} width={{ xs: '90%', sm: 400 }} bgcolor="white" border="2px solid #000"
             boxShadow={24} p={4} display="flex" flexDirection="column" gap={3} borderRadius="8px">
             <Typography variant="h6">Add item</Typography>
             <Stack width="100%" spacing={2}>
@@ -189,7 +190,7 @@ export default function Home() {
                 setItemName("")
                 setItemQuantity("")
                 handleClose()
-              }} style={{ backgroundColor: '#1976d2', color: '#fff' }}> {/* Same styling as "Add New Item" */}
+              }} style={{ backgroundColor: '#1976d2', color: '#fff' }}>
                 Add
               </Button>
             </Stack>
@@ -197,5 +198,5 @@ export default function Home() {
         </Modal>
       </Container>
     </Box>
-  )
+  );
 }
