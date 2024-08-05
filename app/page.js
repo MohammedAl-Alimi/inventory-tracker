@@ -1,18 +1,21 @@
 'use client'
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { firestore } from "@/firebase";
-import { AppBar, Toolbar, Typography, Container, Box, Modal, Grid, TextField, Button, Collapse, IconButton, Stack, InputAdornment } from "@mui/material"; // Ensure Collapse, IconButton, and Stack are imported
+import { firestore, storage } from "@/firebase";
+import { AppBar, Toolbar, Typography, Container, Box, Modal, Grid, TextField, Button, Collapse, IconButton, Stack } from "@mui/material";
 import { collection, getDocs, doc, query, setDoc, deleteDoc, getDoc } from "firebase/firestore";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'; // Import icon for button
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 export default function Home() {
   const [inventory, setInventory] = useState([]);
   const [open, setOpen] = useState(false);
   const [itemName, setItemName] = useState('');
-  const [itemQuantity, setItemQuantity] = useState(''); // Added state for item quantity
-  const [searchQuery, setSearchQuery] = useState(''); // Added state for search query
-  const [listOpen, setListOpen] = useState(false); // Added state to manage the visibility of the inventory list
+  const [itemQuantity, setItemQuantity] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [listOpen, setListOpen] = useState(false);
+  const [image, setImage] = useState(null);
+  const [imageURL, setImageURL] = useState("");
 
   const updateInventory = async () => {
     const snapshot = query(collection(firestore, 'inventory'))
@@ -27,41 +30,45 @@ export default function Home() {
     setInventory(inventoryList)
   }
 
-  const addItem = async (item, quantity) => {
+  const addItem = async (item, quantity, imageUrl) => {
     const docRef = doc(collection(firestore, 'inventory'), item)
     const docSnap = await getDoc(docRef)
 
     if (docSnap.exists()) {
       const { quantity: existingQuantity } = docSnap.data()
-      await setDoc(docRef, { quantity: existingQuantity + quantity })
+      await setDoc(docRef, { quantity: existingQuantity + quantity, imageUrl }, { merge: true })
     } else {
-      await setDoc(docRef, { quantity })
+      await setDoc(docRef, { quantity, imageUrl })
     }
 
     await updateInventory()
   }
 
-  const removeItem = async (item) => {
-    const docRef = doc(collection(firestore, 'inventory'), item)
-    const docSnap = await getDoc(docRef)
+  const handleOpen = () => setOpen(true)
+  const handleClose = () => setOpen(false)
 
-    if (docSnap.exists()) {
-      const { quantity } = docSnap.data()
-      if (quantity === 1) {
-        await deleteDoc(docRef)
-      } else {
-        await setDoc(docRef, { quantity: quantity - 1 })
-      }
+  const handleImageChange = (e) => {
+    if (e.target.files[0]) {
+      setImage(e.target.files[0]);
     }
-    await updateInventory()
-  }
+  };
+
+  const handleUpload = async () => {
+    if (!image) return;
+    const storageRef = ref(storage, `images/${image.name}`);
+    await uploadBytes(storageRef, image);
+    const url = await getDownloadURL(storageRef);
+    setImageURL(url);
+    await addItem(itemName, parseInt(itemQuantity), url);
+    setImage(null);
+    setItemName("");
+    setItemQuantity("");
+    handleClose();
+  };
 
   useEffect(() => {
     updateInventory()
   }, [])
-
-  const handleOpen = () => setOpen(true)
-  const handleClose = () => setOpen(false)
 
   const filteredInventory = inventory.filter(item =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -125,7 +132,7 @@ export default function Home() {
           <Collapse in={listOpen} timeout="auto" unmountOnExit>
             <Box mt={2} borderRadius="8px">
               <Grid container spacing={2} sx={{ height: filteredInventory.length > 4 ? '400px' : 'auto', overflow: filteredInventory.length > 4 ? 'auto' : 'visible' }}>
-                {filteredInventory.map(({ name, quantity }) => {
+                {filteredInventory.map(({ name, quantity, imageUrl }) => {
                   const isHighlighted = searchQuery && name.toLowerCase().includes(searchQuery.toLowerCase());
                   return (
                     <Grid item xs={12} key={name}>
@@ -148,6 +155,7 @@ export default function Home() {
                         <Typography variant="h3" color="#333" sx={{ fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' } }} textAlign="center">
                           {quantity}
                         </Typography>
+                        {imageUrl && <Image src={imageUrl} alt={name} width={50} height={50} />}
                         <Stack direction="row" spacing={2}>
                           <Button variant="contained" onClick={() => addItem(name, 1)}>Add</Button>
                           <Button variant="contained" onClick={() => removeItem(name)}>Remove</Button>
@@ -185,13 +193,9 @@ export default function Home() {
                   setItemQuantity(parseInt(e.target.value))
                 }}
               />
-              <Button variant="contained" onClick={() => {
-                addItem(itemName, itemQuantity)
-                setItemName("")
-                setItemQuantity("")
-                handleClose()
-              }} style={{ backgroundColor: '#1976d2', color: '#fff' }}>
-                Add
+              <input type="file" onChange={handleImageChange} accept="image/*" />
+              <Button variant="contained" onClick={handleUpload} style={{ backgroundColor: '#1976d2', color: '#fff' }}>
+                Upload Image
               </Button>
             </Stack>
           </Box>
