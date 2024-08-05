@@ -114,7 +114,7 @@ export default function Home() {
             borderRadius="8px"
             boxShadow={2}
           >
-            <Typography variant="h2" color="#333">
+            <Typography variant="h2" color="#333" sx={{ fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' } }}>
               Inventory Items
             </Typography>
             <IconButton onClick={() => setListOpen(!listOpen)}>
@@ -142,10 +142,10 @@ export default function Home() {
                         borderRadius="8px"
                         boxShadow={isHighlighted ? 4 : 1}
                       >
-                        <Typography variant="h3" color="#333" textAlign="center">
+                        <Typography variant="h3" color="#333" sx={{ fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' } }} textAlign="center">
                           {name.charAt(0).toUpperCase() + name.slice(1)}
                         </Typography>
-                        <Typography variant="h3" color="#333" textAlign="center">
+                        <Typography variant="h3" color="#333" sx={{ fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' } }} textAlign="center">
                           {quantity}
                         </Typography>
                         <Stack direction="row" spacing={2}>
