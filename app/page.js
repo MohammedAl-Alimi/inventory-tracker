@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { firestore } from "@/firebase";
-import { AppBar, Toolbar, Typography, Container, Box, Modal, Grid, TextField, Button, Collapse, IconButton, InputAdornment } from "@mui/material";
+import { AppBar, Toolbar, Typography, Container, Box, Modal, Grid, TextField, Button, Collapse, IconButton, InputAdornment, Stack } from "@mui/material";
 import { collection, getDocs, doc, query, setDoc, deleteDoc, getDoc } from "firebase/firestore";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
