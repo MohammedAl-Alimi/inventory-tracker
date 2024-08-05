@@ -1,5 +1,4 @@
 'use client'
-import Image from "next/image";
 import { useState, useEffect } from "react";
 import { firestore, storage } from "@/firebase";
 import { AppBar, Toolbar, Typography, Container, Box, Modal, Grid, TextField, Button, Collapse, IconButton, Stack } from "@mui/material";
@@ -15,7 +14,6 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [listOpen, setListOpen] = useState(false);
   const [image, setImage] = useState(null);
-  const [imageURL, setImageURL] = useState("");
 
   const updateInventory = async () => {
     const snapshot = query(collection(firestore, 'inventory'))
@@ -55,15 +53,18 @@ export default function Home() {
 
   const handleUpload = async () => {
     if (!image) return;
-    const storageRef = ref(storage, `images/${image.name}`);
-    await uploadBytes(storageRef, image);
-    const url = await getDownloadURL(storageRef);
-    setImageURL(url);
-    await addItem(itemName, parseInt(itemQuantity), url);
-    setImage(null);
-    setItemName("");
-    setItemQuantity("");
-    handleClose();
+    try {
+      const storageRef = ref(storage, `images/${image.name}`);
+      await uploadBytes(storageRef, image);
+      const url = await getDownloadURL(storageRef);
+      await addItem(itemName, parseInt(itemQuantity), url);
+      setImage(null);
+      setItemName("");
+      setItemQuantity("");
+      handleClose();
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    }
   };
 
   useEffect(() => {
@@ -132,7 +133,7 @@ export default function Home() {
           <Collapse in={listOpen} timeout="auto" unmountOnExit>
             <Box mt={2} borderRadius="8px">
               <Grid container spacing={2} sx={{ height: filteredInventory.length > 4 ? '400px' : 'auto', overflow: filteredInventory.length > 4 ? 'auto' : 'visible' }}>
-                {filteredInventory.map(({ name, quantity, imageUrl }) => {
+                {filteredInventory.map(({ name, quantity }) => {
                   const isHighlighted = searchQuery && name.toLowerCase().includes(searchQuery.toLowerCase());
                   return (
                     <Grid item xs={12} key={name}>
@@ -155,7 +156,6 @@ export default function Home() {
                         <Typography variant="h3" color="#333" sx={{ fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' } }} textAlign="center">
                           {quantity}
                         </Typography>
-                        {imageUrl && <Image src={imageUrl} alt={name} width={50} height={50} />}
                         <Stack direction="row" spacing={2}>
                           <Button variant="contained" onClick={() => addItem(name, 1)}>Add</Button>
                           <Button variant="contained" onClick={() => removeItem(name)}>Remove</Button>
@@ -204,5 +204,3 @@ export default function Home() {
     </Box>
   );
 }
-
-
