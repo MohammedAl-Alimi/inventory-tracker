@@ -2,9 +2,9 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { firestore } from "@/firebase";
-import { AppBar, Toolbar, Typography, Container, Box, Modal, Grid, TextField, Button, Collapse, IconButton, InputAdornment, Stack } from "@mui/material";
+import { AppBar, Toolbar, Typography, Container, Box, Modal, Grid, TextField, Button, Collapse, IconButton, Stack, InputAdornment } from "@mui/material"; // Ensure Collapse, IconButton, and Stack are imported
 import { collection, getDocs, doc, query, setDoc, deleteDoc, getDoc } from "firebase/firestore";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'; // Import icon for button
 
 export default function Home() {
   const [inventory, setInventory] = useState([]);
@@ -105,7 +105,7 @@ export default function Home() {
         <Box width="100%" border="1px solid #333" borderRadius="8px" p={2} boxShadow={3} bgcolor="white">
           <Box
             width="100%"
-            height={{ xs: 'auto', md: '100px' }}
+            height="100px"
             bgcolor="#ADD8E6"
             display="flex"
             alignItems="center"
@@ -114,7 +114,7 @@ export default function Home() {
             borderRadius="8px"
             boxShadow={2}
           >
-            <Typography variant="h4" color="#333" sx={{ fontSize: { xs: '1.5rem', md: '2rem' } }}>
+            <Typography variant="h2" color="#333">
               Inventory Items
             </Typography>
             <IconButton onClick={() => setListOpen(!listOpen)}>
@@ -142,10 +142,10 @@ export default function Home() {
                         borderRadius="8px"
                         boxShadow={isHighlighted ? 4 : 1}
                       >
-                        <Typography variant="h6" color="#333" textAlign="center">
+                        <Typography variant="h3" color="#333" textAlign="center">
                           {name.charAt(0).toUpperCase() + name.slice(1)}
                         </Typography>
-                        <Typography variant="h6" color="#333" textAlign="center">
+                        <Typography variant="h3" color="#333" textAlign="center">
                           {quantity}
                         </Typography>
                         <Stack direction="row" spacing={2}>
