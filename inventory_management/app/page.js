@@ -307,6 +307,7 @@ export default function Home() {
                               '@media (max-width:600px)': {
                                 fontSize: '0.75rem',
                                 padding: '2px 5px',
+                                marginBottom: '5px' // Space between Add and Remove buttons in mobile view
                               }
                             }}
                           >
