@@ -186,7 +186,8 @@ export default function Home() {
               style={{ backgroundColor: '#1976d2', color: '#fff' }}
               sx={{
                 '@media (max-width:600px)': {
-                  fontSize: '0.875rem',
+                  fontSize: '0.75rem',
+                  padding: '4px 8px',
                 }
               }}
             >
@@ -291,20 +292,21 @@ export default function Home() {
                             fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' },
                             '@media (max-width:600px)': {
                               fontSize: '1rem',
+                              marginRight: '8px', // Add margin to separate the number from buttons
                             }
                           }}
                           textAlign="center"
                         >
                           {quantity}
                         </Typography>
-                        <Stack direction="row" spacing={2}>
+                        <Stack direction="row" spacing={1}>
                           <Button
                             variant="contained"
                             onClick={() => handleAddItemOptimistic(name, 1)}
                             sx={{
                               '@media (max-width:600px)': {
                                 fontSize: '0.75rem',
-                                padding: '5px 10px',
+                                padding: '2px 5px',
                               }
                             }}
                           >
@@ -316,7 +318,7 @@ export default function Home() {
                             sx={{
                               '@media (max-width:600px)': {
                                 fontSize: '0.75rem',
-                                padding: '5px 10px',
+                                padding: '2px 5px',
                               }
                             }}
                           >
@@ -330,7 +332,7 @@ export default function Home() {
                             sx={{
                               '@media (max-width:600px)': {
                                 fontSize: '0.75rem',
-                                padding: '5px 10px',
+                                padding: '2px 5px',
                               }
                             }}
                           >
