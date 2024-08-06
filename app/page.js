@@ -5,6 +5,7 @@ import { AppBar, Toolbar, Typography, Container, Box, Modal, Grid, TextField, Bu
 import { collection, getDocs, doc, query, setDoc, deleteDoc, getDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
 export default function Home() {
   const [inventory, setInventory] = useState([]);
@@ -14,6 +15,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [listOpen, setListOpen] = useState(false);
   const [image, setImage] = useState(null);
+  const [itemAdded, setItemAdded] = useState(false); // New state for item added message
 
   const updateInventory = async () => {
     const snapshot = query(collection(firestore, 'inventory'));
@@ -40,6 +42,8 @@ export default function Home() {
     }
 
     await updateInventory();
+    setItemAdded(true); // Show the item added message
+    setTimeout(() => setItemAdded(false), 3000); // Hide the message after 3 seconds
   };
 
   const removeItem = async (item) => {
@@ -67,20 +71,21 @@ export default function Home() {
     }
   };
 
-  const handleUpload = async () => {
-    if (!image) return;
-    try {
-      const storageRef = ref(storage, `images/${image.name}`);
-      await uploadBytes(storageRef, image);
-      const url = await getDownloadURL(storageRef);
-      setImage(null);
-      await addItem(itemName, parseInt(itemQuantity));
-      setItemName("");
-      setItemQuantity("");
-      handleClose();
-    } catch (error) {
-      console.error("Error uploading image:", error);
+  const handleAddItem = async () => {
+    if (image) {
+      try {
+        const storageRef = ref(storage, `images/${image.name}`);
+        await uploadBytes(storageRef, image);
+        await getDownloadURL(storageRef);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
     }
+    await addItem(itemName, parseInt(itemQuantity));
+    setItemName("");
+    setItemQuantity("");
+    setImage(null);
+    handleClose();
   };
 
   useEffect(() => {
@@ -125,6 +130,15 @@ export default function Home() {
             </Button>
           </Grid>
         </Grid>
+
+        {itemAdded && (
+          <Box display="flex" alignItems="center" mt={2} color="green">
+            <CheckCircleOutlineIcon />
+            <Typography variant="body1" ml={1}>
+              Item added
+            </Typography>
+          </Box>
+        )}
 
         <Box width="100%" border="1px solid #333" borderRadius="8px" p={2} boxShadow={3} bgcolor="white">
           <Box
@@ -210,8 +224,8 @@ export default function Home() {
                 }}
               />
               <input type="file" onChange={handleImageChange} accept="image/*" />
-              <Button variant="contained" onClick={handleUpload} style={{ backgroundColor: '#1976d2', color: '#fff' }}>
-                Upload Image
+              <Button variant="contained" onClick={handleAddItem} style={{ backgroundColor: '#1976d2', color: '#fff' }}>
+                Add Item
               </Button>
             </Stack>
           </Box>
