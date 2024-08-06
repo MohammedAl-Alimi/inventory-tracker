@@ -9,6 +9,7 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ImageIcon from '@mui/icons-material/Image';
 import CloseIcon from '@mui/icons-material/Close';
+import throttle from 'lodash/throttle';
 
 export default function Home() {
   const [inventory, setInventory] = useState([]);
@@ -114,6 +115,31 @@ export default function Home() {
     updateInventory();
   }, []);
 
+  const handleAddItemOptimistic = throttle((name, quantity) => {
+    // Optimistically update the state
+    setInventory(prevInventory => prevInventory.map(item =>
+      item.name === name ? { ...item, quantity: item.quantity + quantity } : item
+    ));
+    // Make the API call
+    addItem(name, quantity);
+  }, 2000);
+
+  const handleRemoveItemOptimistic = throttle((name) => {
+    // Optimistically update the state
+    setInventory(prevInventory => prevInventory.map(item =>
+      item.name === name ? { ...item, quantity: item.quantity - 1 } : item
+    ));
+    // Make the API call
+    removeItem(name);
+  }, 2000);
+
+  const handleDeleteItemOptimistic = throttle((name) => {
+    // Optimistically update the state
+    setInventory(prevInventory => prevInventory.filter(item => item.name !== name));
+    // Make the API call
+    deleteItem(name);
+  }, 2000);
+
   const filteredInventory = inventory.filter(item =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -216,9 +242,9 @@ export default function Home() {
                           {quantity}
                         </Typography>
                         <Stack direction="row" spacing={2}>
-                          <Button variant="contained" onClick={() => addItem(name, 1)}>Add</Button>
-                          <Button variant="contained" onClick={() => removeItem(name)}>Remove</Button>
-                          <Button variant="contained" color="error" onClick={() => deleteItem(name)} startIcon={<DeleteIcon />}>Delete</Button>
+                          <Button variant="contained" onClick={() => handleAddItemOptimistic(name, 1)}>Add</Button>
+                          <Button variant="contained" onClick={() => handleRemoveItemOptimistic(name)}>Remove</Button>
+                          <Button variant="contained" color="error" onClick={() => handleDeleteItemOptimistic(name)} startIcon={<DeleteIcon />}>Delete</Button>
                         </Stack>
                       </Box>
                     </Grid>
