@@ -299,7 +299,7 @@ export default function Home() {
                         >
                           {quantity}
                         </Typography>
-                        <Stack direction="row" spacing={1}>
+                        <Stack direction="row" spacing={1} sx={{ '@media (max-width:600px)': { flexDirection: 'column', alignItems: 'center' } }}>
                           <Button
                             variant="contained"
                             onClick={() => handleAddItemOptimistic(name, 1)}
@@ -324,21 +324,22 @@ export default function Home() {
                           >
                             Remove
                           </Button>
-                          <Button
-                            variant="contained"
-                            color="error"
-                            onClick={() => handleDeleteItemOptimistic(name)}
-                            startIcon={<DeleteIcon />}
-                            sx={{
-                              '@media (max-width:600px)': {
-                                fontSize: '0.75rem',
-                                padding: '2px 5px',
-                              }
-                            }}
-                          >
-                            Delete
-                          </Button>
                         </Stack>
+                        <Button
+                          variant="contained"
+                          color="error"
+                          onClick={() => handleDeleteItemOptimistic(name)}
+                          startIcon={<DeleteIcon />}
+                          sx={{
+                            '@media (max-width:600px)': {
+                              fontSize: '0.75rem',
+                              padding: '2px 5px',
+                              marginTop: '5px' // Add margin to separate the button from others
+                            }
+                          }}
+                        >
+                          Delete
+                        </Button>
                       </Box>
                     </Grid>
                   );
