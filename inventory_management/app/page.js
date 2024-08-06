@@ -299,7 +299,7 @@ export default function Home() {
                         >
                           {quantity}
                         </Typography>
-                        <Stack direction="row" spacing={1} sx={{ '@media (max-width:600px)': { flexDirection: 'column', alignItems: 'center' } }}>
+                        <Stack direction="row" spacing={1} sx={{ '@media (max-width:600px)': { flexDirection: 'column', alignItems: 'center', gap: 1 } }}>
                           <Button
                             variant="contained"
                             onClick={() => handleAddItemOptimistic(name, 1)}
@@ -307,7 +307,6 @@ export default function Home() {
                               '@media (max-width:600px)': {
                                 fontSize: '0.75rem',
                                 padding: '2px 5px',
-                                marginBottom: '5px' // Space between Add and Remove buttons in mobile view
                               }
                             }}
                           >
