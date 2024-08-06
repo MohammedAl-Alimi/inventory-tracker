@@ -168,12 +168,28 @@ export default function Home() {
                 style: {
                   backgroundColor: '#1976d2',
                   color: '#fff',
+                  fontSize: '1rem',
                 },
+              }}
+              sx={{
+                '@media (max-width:600px)': {
+                  fontSize: '0.875rem',
+                }
               }}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <Button variant="contained" fullWidth onClick={handleOpen} style={{ backgroundColor: '#1976d2', color: '#fff' }}>
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={handleOpen}
+              style={{ backgroundColor: '#1976d2', color: '#fff' }}
+              sx={{
+                '@media (max-width:600px)': {
+                  fontSize: '0.875rem',
+                }
+              }}
+            >
               Add New Item
             </Button>
           </Grid>
@@ -199,8 +215,22 @@ export default function Home() {
             px={2}
             borderRadius="8px"
             boxShadow={2}
+            sx={{
+              '@media (max-width:600px)': {
+                height: '80px',
+              }
+            }}
           >
-            <Typography variant="h2" color="#333" sx={{ fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' } }}>
+            <Typography
+              variant="h2"
+              color="#333"
+              sx={{
+                fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
+                '@media (max-width:600px)': {
+                  fontSize: '1.5rem',
+                }
+              }}
+            >
               Inventory Items
             </Typography>
             <IconButton onClick={() => setListOpen(!listOpen)}>
@@ -227,6 +257,12 @@ export default function Home() {
                         padding={2}
                         borderRadius="8px"
                         boxShadow={isHighlighted ? 4 : 1}
+                        sx={{
+                          '@media (max-width:600px)': {
+                            minHeight: '100px',
+                            padding: 1,
+                          }
+                        }}
                       >
                         <Box display="flex" alignItems="center">
                           {imageUrl && (
@@ -234,17 +270,72 @@ export default function Home() {
                               <ImageIcon />
                             </IconButton>
                           )}
-                          <Typography variant="h3" color="#333" sx={{ fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' } }} textAlign="center">
+                          <Typography
+                            variant="h3"
+                            color="#333"
+                            sx={{
+                              fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' },
+                              '@media (max-width:600px)': {
+                                fontSize: '1rem',
+                              }
+                            }}
+                            textAlign="center"
+                          >
                             {name.charAt(0).toUpperCase() + name.slice(1)}
                           </Typography>
                         </Box>
-                        <Typography variant="h3" color="#333" sx={{ fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' } }} textAlign="center">
+                        <Typography
+                          variant="h3"
+                          color="#333"
+                          sx={{
+                            fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' },
+                            '@media (max-width:600px)': {
+                              fontSize: '1rem',
+                            }
+                          }}
+                          textAlign="center"
+                        >
                           {quantity}
                         </Typography>
                         <Stack direction="row" spacing={2}>
-                          <Button variant="contained" onClick={() => handleAddItemOptimistic(name, 1)}>Add</Button>
-                          <Button variant="contained" onClick={() => handleRemoveItemOptimistic(name)}>Remove</Button>
-                          <Button variant="contained" color="error" onClick={() => handleDeleteItemOptimistic(name)} startIcon={<DeleteIcon />}>Delete</Button>
+                          <Button
+                            variant="contained"
+                            onClick={() => handleAddItemOptimistic(name, 1)}
+                            sx={{
+                              '@media (max-width:600px)': {
+                                fontSize: '0.75rem',
+                                padding: '5px 10px',
+                              }
+                            }}
+                          >
+                            Add
+                          </Button>
+                          <Button
+                            variant="contained"
+                            onClick={() => handleRemoveItemOptimistic(name)}
+                            sx={{
+                              '@media (max-width:600px)': {
+                                fontSize: '0.75rem',
+                                padding: '5px 10px',
+                              }
+                            }}
+                          >
+                            Remove
+                          </Button>
+                          <Button
+                            variant="contained"
+                            color="error"
+                            onClick={() => handleDeleteItemOptimistic(name)}
+                            startIcon={<DeleteIcon />}
+                            sx={{
+                              '@media (max-width:600px)': {
+                                fontSize: '0.75rem',
+                                padding: '5px 10px',
+                              }
+                            }}
+                          >
+                            Delete
+                          </Button>
                         </Stack>
                       </Box>
                     </Grid>
@@ -268,6 +359,11 @@ export default function Home() {
                 onChange={(e) => {
                   setItemName(e.target.value)
                 }}
+                sx={{
+                  '@media (max-width:600px)': {
+                    fontSize: '0.875rem',
+                  }
+                }}
               />
               <TextField
                 variant='outlined'
@@ -278,9 +374,23 @@ export default function Home() {
                 onChange={(e) => {
                   setItemQuantity(parseInt(e.target.value))
                 }}
+                sx={{
+                  '@media (max-width:600px)': {
+                    fontSize: '0.875rem',
+                  }
+                }}
               />
               <input type="file" onChange={handleImageChange} accept="image/*" />
-              <Button variant="contained" onClick={handleAddItem} style={{ backgroundColor: '#1976d2', color: '#fff' }}>
+              <Button
+                variant="contained"
+                onClick={handleAddItem}
+                style={{ backgroundColor: '#1976d2', color: '#fff' }}
+                sx={{
+                  '@media (max-width:600px)': {
+                    fontSize: '0.875rem',
+                  }
+                }}
+              >
                 Add Item
               </Button>
             </Stack>
